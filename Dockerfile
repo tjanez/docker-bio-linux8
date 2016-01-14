@@ -1,12 +1,11 @@
-# Dockerfile to build Bio-Linux8
+# Dockerfile to build a containerized version of Bio-Linux 8
 #
 # VERSION 0.1
 
-# use ubuntu base image
-FROM ubuntu
+# Bio-Linux 8 is based on Ubuntu 14.04
+FROM ubuntu:14.04
 
-# maintained by me
-MAINTAINER Steve Moss <gawbul@gmail.com>
+MAINTAINER Genialis <dev-team@genialis.com>
 
 # set $HOME env variable
 ENV HOME /root
