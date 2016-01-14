@@ -1,0 +1,4 @@
+# Disable installation of packages with graphical user interface
+Package: edubuntu* gnome* gconf* kubuntu* lubuntu* mate* qtubuntu* ubuntu* unity* x11* xubuntu* xserver*
+Pin: release *
+Pin-Priority: -1

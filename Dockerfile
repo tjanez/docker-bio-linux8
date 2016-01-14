@@ -13,19 +13,8 @@ ENV HOME /root
 # change to $HOME directory
 WORKDIR $HOME
 
-# add negative pin priority to some graphical packages to stop them installing and borking the build
-RUN echo "Package: edubuntu*\nPin: release *\nPin-Priority: -1" >> /etc/apt/preferences
-RUN echo "Package: gnome*\nPin: release *\nPin-Priority: -1" >> /etc/apt/preferences
-RUN echo "Package: gconf*\nPin: release *\nPin-Priority: -1" >> /etc/apt/preferences
-RUN echo "Package: kubuntu*\nPin: release *\nPin-Priority: -1" >> /etc/apt/preferences
-RUN echo "Package: lubuntu*\nPin: release *\nPin-Priority: -1" >> /etc/apt/preferences
-RUN echo "Package: mate*\nPin: release *\nPin-Priority: -1" >> /etc/apt/preferences
-RUN echo "Package: qtubuntu*\nPin: release *\nPin-Priority: -1" >> /etc/apt/preferences
-RUN echo "Package: ubuntu*\nPin: release *\nPin-Priority: -1" >> /etc/apt/preferences
-RUN echo "Package: unity*\nPin: release *\nPin-Priority: -1" >> /etc/apt/preferences
-RUN echo "Package: x11*\nPin: release *\nPin-Priority: -1" >> /etc/apt/preferences
-RUN echo "Package: xubuntu*\nPin: release *\nPin-Priority: -1" >> /etc/apt/preferences
-RUN echo "Package: xserver*\nPin: release *\nPin-Priority: -1" >> /etc/apt/preferences
+# disable installation of packages with graphical user interface
+ADD apt-disable-install-of-gui-packages.pref /etc/apt/preferences.d/disable-install-of-gui-packages.pref
 
 # change APT sources.list to pull from GB servers
 # uncomment some entries and add some other entries
