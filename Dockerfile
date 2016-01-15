@@ -18,7 +18,6 @@ ADD apt-disable-install-of-gui-packages.pref /etc/apt/preferences.d/disable-inst
 
 # add apt's sources for 'multiverse' repository and enable 'trusty-backports'
 ADD apt-add-multiverse-and-enable-backports.list /etc/apt/sources.list.d/add-multiverse-and-enable-backports.list
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 16126D3A3E5C1192
 
 # update the system and install some required/useful packages
 RUN apt-get update && apt-get -y upgrade && apt-get -y install build-essential sharutils wget vim git mercurial software-properties-common tmux
