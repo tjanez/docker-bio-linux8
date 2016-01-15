@@ -16,13 +16,8 @@ WORKDIR $HOME
 # disable installation of packages with graphical user interface
 ADD apt-disable-install-of-gui-packages.pref /etc/apt/preferences.d/disable-install-of-gui-packages.pref
 
-# change APT sources.list to pull from GB servers
-# uncomment some entries and add some other entries
-RUN sed -i "s/archive.ubuntu.com/gb.archive.ubuntu.com/" /etc/apt/sources.list
-RUN sed -ri "s/^\# (.*trusty-backports.*)/\1 universe multiverse/" /etc/apt/sources.list
-RUN sed -ri "s/^\# (.*trusty-security.*)/\1/" /etc/apt/sources.list
-ADD bio-linux-sources.txt $HOME/bio-linux-sources.txt
-RUN cat $HOME/bio-linux-sources.txt >> /etc/apt/sources.list
+# add apt's sources for 'multiverse' repository and enable 'trusty-backports'
+ADD apt-add-multiverse-and-enable-backports.list /etc/apt/sources.list.d/add-multiverse-and-enable-backports.list
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 16126D3A3E5C1192
 
 # update the system and install some required/useful packages
