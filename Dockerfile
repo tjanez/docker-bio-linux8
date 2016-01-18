@@ -22,25 +22,25 @@ ADD apt-add-multiverse-and-enable-backports.list /etc/apt/sources.list.d/add-mul
 # install some required/useful packages
 RUN apt-get update && apt-get -y install build-essential sharutils wget vim git mercurial software-properties-common tmux
 
-# pull BL8 upgrade script from nerc server
-RUN wget -c http://nebc.nerc.ac.uk/downloads/bl8_only/upgrade8.sh
+# NEBC Team's Bio-Linux 8 package signing key
+# To obtain a fresh copy from upstream's install script, follow these steps:
+#   wget -c http://nebc.nerc.ac.uk/downloads/bl8_only/upgrade8.sh
+#   sed -i 's/mktemp \-d/pwd/' upgrade8.sh
+#   UNPACK_ONLY=1 sh upgrade8.sh
+#   dpkg --fsys-tarfile bio-linux-keyring.deb | tar xOf - ./usr/share/keyrings/bio-linux-8-signing.gpg > bio-linux8-signing.gpg
+ADD bio-linux-8-signing.gpg /root/bio-linux-8-signing.gpg
 
-# replace the mktemp step with current working directory
-RUN sed -i 's/mktemp \-d/pwd/' upgrade8.sh
-
-# run script in unpack mode only
-RUN UNPACK_ONLY=1 sh upgrade8.sh
-
-# install bio-linux repository keys
-RUN dpkg -EGi ./bio-linux-keyring.deb
-
-# add Bio-Linux and CRAN-to-DEB repositories
-RUN apt-add-repository -y ppa:nebc/bio-linux && apt-add-repository -y ppa:marutter/c2d4u
-
-# add bio-linux and rstudio cran legacy lists to apt sources
-ADD bio-linux-legacy.list /etc/apt/sources.list.d/bio-linux-legacy.list
-ADD cran-latest-r.list /etc/apt/sources.list.d/cran-latest-r.list
-RUN apt-get update
+RUN echo "Configuring apt repositories..." && \
+    # official Bio-Linux PPA...
+    apt-add-repository -y ppa:nebc/bio-linux && \
+    # Michael Rutter's cran2deb4ubuntu PPA...
+    apt-add-repository -y ppa:marutter/c2d4u && \
+    # upstream CRAN packages for Ubuntu Trusty from R Studio CRAN mirror
+    apt-add-repository -y 'deb http://cran.rstudio.com/bin/linux/ubuntu trusty/' && \
+    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9 && \
+    # legacy Bio-Linux packages
+    apt-add-repository -y 'deb http://nebc.nerc.ac.uk/bio-linux/ unstable bio-linux' && \
+    apt-key add bio-linux-8-signing.gpg
 
 # pin some additional packages to ensure they update okay
 # as per Tim's Bio-Linux upgrade script
