@@ -19,8 +19,8 @@ ADD apt-disable-install-of-gui-packages.pref /etc/apt/preferences.d/disable-inst
 # add apt's sources for 'multiverse' repository and enable 'trusty-backports'
 ADD apt-add-multiverse-and-enable-backports.list /etc/apt/sources.list.d/add-multiverse-and-enable-backports.list
 
-# update the system and install some required/useful packages
-RUN apt-get update && apt-get -y upgrade && apt-get -y install build-essential sharutils wget vim git mercurial software-properties-common tmux
+# install some required/useful packages
+RUN apt-get update && apt-get -y install build-essential sharutils wget vim git mercurial software-properties-common tmux
 
 # pull BL8 upgrade script from nerc server
 RUN wget -c http://nebc.nerc.ac.uk/downloads/bl8_only/upgrade8.sh
