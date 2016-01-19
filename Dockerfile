@@ -42,15 +42,6 @@ RUN echo "Configuring apt repositories..." && \
     apt-add-repository -y 'deb http://nebc.nerc.ac.uk/bio-linux/ unstable bio-linux' && \
     apt-key add bio-linux-8-signing.gpg
 
-# pin some additional packages to ensure they update okay
-# as per Tim's Bio-Linux upgrade script
-RUN orphans=`cat $HOME/pseudo_orphans.txt | egrep -v "^#"` && for p in $orphans ; do for l in "Package: $p" 'Pin: origin ?*' 'Pin-Priority: 1001' '' ; do echo "$l" ; done done > $HOME/pseudo_orphans.pin && echo $orphans | xargs apt-get -y install
-
-# update the system to register new packages
-RUN apt-get update && \
-apt-get -y --force-yes -o "Dir::Etc::Preferences=$HOME/pseudo_orphans.pin" upgrade && \
-apt-get -y --force-yes -o "Dir::Etc::Preferences=$HOME/pseudo_orphans.pin" dist-upgrade
-
 # install bio-linux packages
 ENV DEBIAN_FRONTEND noninteractive
 ADD rm_from_package_list.txt $HOME/rm_from_package_list.txt
