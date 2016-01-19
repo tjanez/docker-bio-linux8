@@ -19,8 +19,20 @@ ADD apt-disable-install-of-gui-packages.pref /etc/apt/preferences.d/disable-inst
 # add apt's sources for 'multiverse' repository and enable 'trusty-backports'
 ADD apt-add-multiverse-and-enable-backports.list /etc/apt/sources.list.d/add-multiverse-and-enable-backports.list
 
-# install some required/useful packages
-RUN apt-get update && apt-get -y install build-essential sharutils wget vim git mercurial software-properties-common tmux
+# install utility packages
+ENV DEBIAN_FRONTEND noninteractive
+RUN apt-get update && \
+    apt-get -y install --no-install-recommends \
+        build-essential \
+        sharutils \
+        wget \
+        vim \
+        git \
+        mercurial \
+        software-properties-common \
+        tmux && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # NEBC Team's Bio-Linux 8 package signing key
 # To obtain a fresh copy from upstream's install script, follow these steps:
@@ -43,7 +55,6 @@ RUN echo "Configuring apt repositories..." && \
     apt-key add bio-linux-8-signing.gpg
 
 # install bio-linux packages
-ENV DEBIAN_FRONTEND noninteractive
 ADD rm_from_package_list.txt $HOME/rm_from_package_list.txt
 RUN for p in `cat $HOME/rm_from_package_list.txt` ; do sed -ir "/^$p.*/d" $HOME/bl_master_package_list.txt; done
 RUN echo 'mysql-server mysql-server/root_password password root' | debconf-set-selections \
