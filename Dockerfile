@@ -13,8 +13,8 @@ ENV HOME /root
 # change to $HOME directory
 WORKDIR $HOME
 
-# disable installation of packages with graphical user interface
-ADD apt-disable-install-of-gui-packages.pref /etc/apt/preferences.d/disable-install-of-gui-packages.pref
+# disable installation of packages not suitable for a container environment
+ADD apt-disable-install-of-packages.pref /etc/apt/preferences.d/disable-install-of-packages.pref
 
 # add apt's sources for 'multiverse' repository and enable 'trusty-backports'
 ADD apt-add-multiverse-and-enable-backports.list /etc/apt/sources.list.d/add-multiverse-and-enable-backports.list
@@ -54,21 +54,22 @@ RUN echo "Configuring apt repositories..." && \
     apt-add-repository -y 'deb http://nebc.nerc.ac.uk/bio-linux/ unstable bio-linux' && \
     apt-key add bio-linux-8-signing.gpg
 
-# install bio-linux packages
+ADD bl_master_package_list.txt $HOME/bl_master_package_list.txt
 ADD rm_from_package_list.txt $HOME/rm_from_package_list.txt
-RUN for p in `cat $HOME/rm_from_package_list.txt` ; do sed -ir "/^$p.*/d" $HOME/bl_master_package_list.txt; done
-RUN echo 'mysql-server mysql-server/root_password password root' | debconf-set-selections \
-&& echo 'mysql-server mysql-server/root_password_again password root' | debconf-set-selections
-RUN chmod +x $HOME/bl_install_master_list.sh
-#RUN /bin/bash $HOME/bl_install_master_list.sh
+RUN echo "Assembling list of packages to install..." && \
+    cp $HOME/bl_master_package_list.txt $HOME/package_list.txt && \
+    for p in `cat $HOME/rm_from_package_list.txt` ; do \
+        sed --in-place "/^$p.*/d" $HOME/package_list.txt; \
+    done && \
+    echo "Installing packages..." && \
+    apt-get update && \
+    cat $HOME/package_list.txt | xargs apt-get install -y --no-install-recommends && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # set default CRAN mirror to 0-Cloud (cran.rstudio.com)
 ADD cran-default-repos.txt $HOME/cran-default-repos.txt
 RUN cat cran-default-repos.txt >> /etc/R/Rprofile.site
-
-# clean up
-#RUN rm *.*
-RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # create a biolinux user and add to sudo group
 RUN useradd -r -m -U -d /home/biolinux -s /bin/bash -c "Bio-Linux User" -p "" biolinux

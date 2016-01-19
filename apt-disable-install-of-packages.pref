@@ -1,0 +1,19 @@
+# Disable installation of packages with graphical user interface
+Package: edubuntu* gnome* gconf* kubuntu* lubuntu* mate* qtubuntu* ubuntu* unity* xubuntu* xserver*
+Pin: release *
+Pin-Priority: -1
+
+# Disable installation to TeX packages
+Package: texlive*
+Pin: release *
+Pin-Priority: -1
+
+# Disable installation of JDK packages
+Package: openjdk-7-jdk
+Pin: release *
+Pin-Priority: -1
+
+# Disable installtion of services
+Package: apache* rsync
+Pin: release *
+Pin-Priority: -1
