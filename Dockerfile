@@ -72,10 +72,12 @@ ADD cran-default-repos.txt $HOME/cran-default-repos.txt
 RUN cat cran-default-repos.txt >> /etc/R/Rprofile.site
 
 # create a biolinux user and add to sudo group
-RUN useradd -r -m -U -d /home/biolinux -s /bin/bash -c "Bio-Linux User" -p "" biolinux
-RUN usermod -a -G sudo biolinux
-# turn off password requirement for sudo groups users
-RUN sed -i "s/^\%sudo\tALL=(ALL:ALL)\sALL/%sudo ALL=(ALL) NOPASSWD:ALL/" /etc/sudoers
+RUN echo "Creating biolinux user..." && \
+    useradd -r -m -U -d /home/biolinux -s /bin/bash -c "Bio-Linux User" -p "" biolinux && \
+    echo "Adding biolinux to sudo group..." && \
+    usermod -a -G sudo biolinux && \
+    echo "Enabling password-less sudo for sudo group..." && \
+    sed -i "s/^\%sudo\tALL=(ALL:ALL)\sALL/%sudo ALL=(ALL) NOPASSWD:ALL/" /etc/sudoers
 
 # change to biolinux user
 USER biolinux
